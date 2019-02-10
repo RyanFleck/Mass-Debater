@@ -10,6 +10,10 @@ const app = express();
 const srv = require('http').Server(app);
 const io = socketio(srv);
 
+const User = require('./src/user');
+
+const rooms = {};
+
 app.use(bodyParser.json());
 app.use(helmet());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -21,12 +25,32 @@ app.get('/', (req, res) => {
 });
 
 app.get('/:room', (req, res) => {
-    res.send(req.params.room + ' debate room');
+    res.sendFile(path.join(__dirname + '/static/chatroom.html'));
 });
 
+
+/**
+ * SocketIO calls.
+ */
+
 io.on('connection', (socket)=>{
-    console.log('A user connected.');
+
+    const user = new User(socket.id);
+
+    socket.on('get-page-info',(pageurl)=>{
+        const { roomid, fancyname } = parseUrl(pageurl);
+        socket.join(roomid);
+        user.room = roomid;
+        user.roomname = fancyname;
+        io.to(socket.id).emit('room-setup',{},fancyname);
+        console.log(`User ${socket.id} joined room ${roomid}`)
+    });
+
+    socket.on('message-from-user',(username,message)=>{
+        socket.to(user.room).emit('message-to-room', username, message);
+    });
 });
+
 
 /**
  * Get port from environment and store in Express.
@@ -105,6 +129,12 @@ function onListening() {
         ? 'pipe ' + addr
         : 'port ' + addr.port;
     debug('Listening on ' + bind);
+}
+
+function parseUrl(url){
+    url = decodeURI(url.substr(1));
+    const roomid = url.replace(/\s+/g, '-').toLowerCase();
+    return { 'roomid': roomid, 'fancyname': url };
 }
 
 module.exports = app;

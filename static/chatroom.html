@@ -9,6 +9,9 @@
 <meta property="og:locale" content="en_US" />
 <title>Mass-Debater</title>
 
+<script src="/socket.io/socket.io.js" type="application/javascript"></script>
+<script src="messages.js" type="application/javascript"></script>
+
 <style>
     body {
         max-width: 600px;
@@ -31,12 +34,10 @@
 </style>
 </head>
 <body>
-<h1>Mass Debater</h1>
-<p>Enter one of the most popular rooms:</p>
-<ul>
-    <li>Trump</li>
-    <li>LegalWeed</li>
-    <li>Stocks</li>
+<h1 id="room">&#937;</h1>
+<ul id="messages">
+    <li>Three</li>
+    <li>Two</li>
 </ul>
 <br />
 <p class="quiet">19&Omega;</p>
