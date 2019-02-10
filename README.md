@@ -1,4 +1,4 @@
-# Mass Debating Engine - Sentiment
+# Sentiment - Mass Debating & Analysis Engine
 
 Socket.IO room-based debate platform.
 
