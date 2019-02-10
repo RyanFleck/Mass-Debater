@@ -26,6 +26,17 @@
         color: #DDD;
         text-align: right;
     }
+    ul{
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+    }
+    li{
+        padding: 0px 0px;
+    }
+    form{
+        padding: 10px 0px;
+    }
     @media only screen and ( max-width: 610px ){
         body{
             padding: 0 0.5em;
@@ -35,6 +46,11 @@
 </head>
 <body>
 <h1 id="room">&#937;</h1>
+<form id="userinput" action="">
+    <input id="username" autocomplete="off" placeholder="Username" />
+    <input id="message" autocomplete="off" placeholder="Message"/>
+    <button>Send</button>
+</form>
 <ul id="messages">
     <li>Three</li>
     <li>Two</li>

@@ -37,6 +37,7 @@ io.on('connection', (socket)=>{
 
     const user = new User(socket.id);
 
+
     socket.on('get-page-info',(pageurl)=>{
         const { roomid, fancyname } = parseUrl(pageurl);
         socket.join(roomid);
