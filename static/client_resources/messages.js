@@ -4,29 +4,33 @@ window.onload = function(){
     console.log('Me loaded!');
 
     var socket = io();
-    var room = document.getElementById('room');
-    var messages = document.getElementById('messages');
-    var userinput = document.getElementById('userinput');
+    var messages = $('#messages');
 
     socket.on('room-setup', function(messages, name){
         console.log('Setting up room '+name);
-        room.innerHTML = name;
+        document.getElementById('room').innerHTML = 'Topic: ' + name;
     });
 
     socket.on('test', function(){
         console.log('Test passed.');
     });
 
-    socket.on('message-to-client',function(username,message){
-        messages.prepend('<li>'+username+': '+message+'</li>');
+    socket.on('message-to-room', function (x) {
+        messages.prepend('<li>' + x.username + ': ' + x.message + '</li>' );
     });
 
     socket.emit('get-page-info', window.location.pathname);
 
-    userinput.onsubmit(function(e){
+    $('form').submit(function (e) {
         e.preventDefault();
-        console.log('Sending message...');
-        socket.emit('message-from-user', 'testuser', 'I have joined.');
+        
+        socket.emit('message-from-user', {
+            'username': $('#user-name').val(),
+            'message': $('#user-message').val(),
+        });
+
+        $('#user-message').val('').focus();
+
         return false;
     });
 }

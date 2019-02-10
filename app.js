@@ -17,15 +17,15 @@ const rooms = {};
 app.use(bodyParser.json());
 app.use(helmet());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser())
+app.use(cookieParser());
 app.use(express.static('static/client_resources'));
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname + '/static/index.html'));
+    res.sendFile(path.join( __dirname + '/static/index.html'));
 });
 
 app.get('/:room', (req, res) => {
-    res.sendFile(path.join(__dirname + '/static/chatroom.html'));
+    res.sendFile(path.join( __dirname + '/static/chatroom.html'));
 });
 
 
@@ -41,14 +41,21 @@ io.on('connection', (socket)=>{
     socket.on('get-page-info',(pageurl)=>{
         const { roomid, fancyname } = parseUrl(pageurl);
         socket.join(roomid);
-        user.room = roomid;
-        user.roomname = fancyname;
+        user.setRoom(roomid, fancyname);
         io.to(socket.id).emit('room-setup',{},fancyname);
-        console.log(`User ${socket.id} joined room ${roomid}`)
+        console.log(`User ${socket.id} joined room ${user.getRoom()}`);
     });
 
-    socket.on('message-from-user',(username,message)=>{
-        socket.to(user.room).emit('message-to-room', username, message);
+    socket.on('message-from-user', (x) => {
+        console.log(x);
+        if (!x.message || !x.username)
+            return 1;
+
+        // .to(user.getRoom())
+        socket.emit('message-to-room', {
+            'username': x.username.substr(0,20),
+            'message': x.message.substr(0,240)
+        });
     });
 });
 
@@ -134,7 +141,7 @@ function onListening() {
 
 function parseUrl(url){
     url = decodeURI(url.substr(1));
-    const roomid = url.replace(/\s+/g, '-').toLowerCase();
+    const roomid = url.replace(/[^0-9a-z]/gi, '').toLowerCase();
     return { 'roomid': roomid, 'fancyname': url };
 }
 

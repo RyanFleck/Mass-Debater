@@ -9,8 +9,12 @@
 <meta property="og:locale" content="en_US" />
 <title>Mass-Debater</title>
 
+<link rel="icon" type="image/png" href="favicon.ico">
+
+<script src="jquery-3.3.1.min.js" type="application/javascript"></script>
 <script src="/socket.io/socket.io.js" type="application/javascript"></script>
 <script src="messages.js" type="application/javascript"></script>
+
 
 <style>
     body {
@@ -34,8 +38,23 @@
     li{
         padding: 0px 0px;
     }
-    form{
-        padding: 10px 0px;
+    #form-container{
+        position: fixed;
+        bottom:0;
+        left: 0;
+        padding: 5px;
+        margin: 0;
+        width: 100%;
+        background: #EEE;
+    }
+    form{        
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    .chatinput{
+        border-radius: 4px;
+        border: 1px solid #CCC;
+        padding: 5px;
     }
     @media only screen and ( max-width: 610px ){
         body{
@@ -46,16 +65,18 @@
 </head>
 <body>
 <h1 id="room">&#937;</h1>
-<form id="userinput" action="">
-    <input id="username" autocomplete="off" placeholder="Username" />
-    <input id="message" autocomplete="off" placeholder="Message"/>
-    <button>Send</button>
-</form>
 <ul id="messages">
     <li>Three</li>
     <li>Two</li>
 </ul>
 <br />
+<div id="form-container">
+<form id="userinput" action="">
+    <input class="chatinput" id="user-name" required maxlength="20" autocomplete="off" placeholder="Username" />
+    <input class="chatinput" id="user-message" required maxlength="240" autocomplete="off" placeholder="Message" />
+    <button class="chatinput">Send</button>
+</form>
+</div>
 <p class="quiet">19&Omega;</p>
 </body>
 </html>
