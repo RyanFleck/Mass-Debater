@@ -26,7 +26,6 @@ app.get('/:room', (req, res) => {
     res.sendFile(path.join( __dirname + '/static/chatroom.html'));
 });
 
-
 /**
  * SocketIO calls.
  */
@@ -37,9 +36,21 @@ io.on('connection', (socket)=>{
 
     socket.on('get-sys-info', () => { 
         console.log('System info requested.');
-        socket.emit('sys-info', {
-            'one':'test'
+        
+        let currentRooms = {};
+
+        Object.keys(io.nsps['/'].adapter.rooms).forEach(k => {
+            const users = io.nsps['/'].adapter.rooms[k].length
+            if (users >= 2) {
+                console.log(`${users} users in ${k} room.`);
+                let x = io.nsps['/'].adapter.rooms[k].fn;
+                k = x ? x : k;
+                currentRooms[k] = users;
+            }
         });
+
+        socket.emit('sys-info', currentRooms);
+
 
     });
 
@@ -51,11 +62,12 @@ io.on('connection', (socket)=>{
 
         if (!io.nsps['/'].adapter.rooms[roomid]) {
             socket.emit('message', 'You are first!');
+            socket.join(roomid);
+            io.nsps['/'].adapter.rooms[roomid].fn = fancyname;
         } else { 
             socket.emit('message', `${io.nsps['/'].adapter.rooms[roomid].length} other users present in ${roomid}`);
+            socket.join(roomid);
         }
-
-        socket.join(roomid);
 
         console.log(`User ${socket.id} joined room ${user.getRoom()}`);
 
