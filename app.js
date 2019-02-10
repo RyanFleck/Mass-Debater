@@ -12,8 +12,6 @@ const io = socketio(srv);
 
 const User = require('./src/user');
 
-const rooms = {};
-
 app.use(bodyParser.json());
 app.use(helmet());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -37,12 +35,19 @@ io.on('connection', (socket)=>{
 
     const user = new User(socket.id);
 
+    socket.on('get-sys-info', () => { 
+        console.log('System info requested.');
+        socket.emit('sys-info', {
+            'one':'test'
+        });
+
+    });
+
 
     socket.on('get-page-info',(pageurl)=>{
         const { roomid, fancyname } = parseUrl(pageurl);
         io.to(socket.id).emit('room-setup', {}, fancyname, roomid);
         user.setRoom(roomid, fancyname);
-
 
         if (!io.nsps['/'].adapter.rooms[roomid]) {
             socket.emit('message', 'You are first!');
@@ -51,23 +56,37 @@ io.on('connection', (socket)=>{
         }
 
         socket.join(roomid);
+
         console.log(`User ${socket.id} joined room ${user.getRoom()}`);
+
+        console.log('\nRooms:');
+
+        let currentRooms = {};
+        Object.keys(io.nsps['/'].adapter.rooms).forEach(k => {
+            const users = io.nsps['/'].adapter.rooms[k].length
+            if (users >= 2) { 
+                console.log(`${users} users in ${k} room.`);
+                currentRooms[k] = users;
+            }
+        });
+        rooms = currentRooms;
+        console.log('\n');
     });
 
     socket.on('message-from-user', (x) => {
         if (!x.message || !x.username || !x.room )
             return 1;
 
-        socket.emit('message', 'Client recieved message '+x.message);
+        socket.to(user.socket).emit('message', 'Client recieved message '+x.message);
         console.log('Circulating message to' + x.room);
-        socket.to(user.getRoom()).emit('message-to-room', {
+        io.to(user.getRoom()).emit('message-to-room', {
             'username': x.username.substr(0,20),
             'message': x.message.substr(0, 240)
         });
     });
 
     socket.on('disconnect', () => { 
-        console.log(`User ${socket.id} left room ${user.getRoom()}`);
+        console.log(`User ${user.socket} left room ${user.getRoom()}`);
     });
 });
 

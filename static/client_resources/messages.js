@@ -44,7 +44,6 @@ window.onload = function(){
             'room': roomId
         });
 
-        messages.prepend('<li>' + u + ': ' + p + '</li>');
         $('#user-message').val('').focus();
         return false;
     });
