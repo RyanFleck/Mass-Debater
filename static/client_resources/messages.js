@@ -23,6 +23,10 @@ window.onload = function(){
         console.log('Test passed.');
     });
 
+    socket.on('message', function (m) { 
+        console.log(m);
+    });
+
     socket.on('message-to-room', function (x) {
         console.log('Recieved message\nu: '+x.username+'\nm: '+x.message)
         messages.prepend('<li>' + x.username + ': ' + x.message + '</li>' );
@@ -37,13 +41,11 @@ window.onload = function(){
         socket.emit('message-from-user', {
             'username': u,
             'message': p,
-            'room': room
+            'room': roomId
         });
 
-        // messages.prepend('<li>' + u + ': ' + p + '</li>');
-
+        messages.prepend('<li>' + u + ': ' + p + '</li>');
         $('#user-message').val('').focus();
-
         return false;
     });
 }

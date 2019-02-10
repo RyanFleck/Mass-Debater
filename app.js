@@ -42,6 +42,14 @@ io.on('connection', (socket)=>{
         const { roomid, fancyname } = parseUrl(pageurl);
         io.to(socket.id).emit('room-setup', {}, fancyname, roomid);
         user.setRoom(roomid, fancyname);
+
+
+        if (!io.nsps['/'].adapter.rooms[roomid]) {
+            socket.emit('message', 'You are first!');
+        } else { 
+            socket.emit('message', `${io.nsps['/'].adapter.rooms[roomid].length} other users present in ${roomid}`);
+        }
+
         socket.join(roomid);
         console.log(`User ${socket.id} joined room ${user.getRoom()}`);
     });
@@ -50,8 +58,9 @@ io.on('connection', (socket)=>{
         if (!x.message || !x.username || !x.room )
             return 1;
 
-        console.log('Sending to room ' + x.room);
-        socket.emit('message-to-room', {
+        socket.emit('message', 'Client recieved message '+x.message);
+        console.log('Circulating message to' + x.room);
+        socket.to(user.getRoom()).emit('message-to-room', {
             'username': x.username.substr(0,20),
             'message': x.message.substr(0, 240)
         });
