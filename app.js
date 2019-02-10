@@ -3,7 +3,7 @@ const socketio = require('socket.io');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const debug = require('debug')('Mass-Debater:server');
+const debug = require('debug')('Sentiment:server');
 const helmet = require('helmet');
 
 const app = express();
