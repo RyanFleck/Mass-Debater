@@ -40,22 +40,25 @@ io.on('connection', (socket)=>{
 
     socket.on('get-page-info',(pageurl)=>{
         const { roomid, fancyname } = parseUrl(pageurl);
-        socket.join(roomid);
+        io.to(socket.id).emit('room-setup', {}, fancyname, roomid);
         user.setRoom(roomid, fancyname);
-        io.to(socket.id).emit('room-setup',{},fancyname);
+        socket.join(roomid);
         console.log(`User ${socket.id} joined room ${user.getRoom()}`);
     });
 
     socket.on('message-from-user', (x) => {
-        console.log(x);
-        if (!x.message || !x.username)
+        if (!x.message || !x.username || !x.room )
             return 1;
 
-        // .to(user.getRoom())
+        console.log('Sending to room ' + x.room);
         socket.emit('message-to-room', {
             'username': x.username.substr(0,20),
-            'message': x.message.substr(0,240)
+            'message': x.message.substr(0, 240)
         });
+    });
+
+    socket.on('disconnect', () => { 
+        console.log(`User ${socket.id} left room ${user.getRoom()}`);
     });
 });
 

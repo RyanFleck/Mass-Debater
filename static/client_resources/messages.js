@@ -1,14 +1,22 @@
 /* eslint-disable */
 
+var roomName;
+var roomId;
+
 window.onload = function(){
     console.log('Me loaded!');
 
     var socket = io();
     var messages = $('#messages');
+    
 
-    socket.on('room-setup', function(messages, name){
-        console.log('Setting up room '+name);
-        document.getElementById('room').innerHTML = 'Topic: ' + name;
+    socket.emit('get-page-info', window.location.pathname);
+
+    socket.on('room-setup', function (messages, rname, rid) {
+        roomName = rname;
+        roomId = rid;
+        console.log('Setting up room '+rname+'\nid: '+roomId);
+        document.getElementById('room').innerHTML = 'Topic: ' + roomName;
     });
 
     socket.on('test', function(){
@@ -16,18 +24,23 @@ window.onload = function(){
     });
 
     socket.on('message-to-room', function (x) {
+        console.log('Recieved message\nu: '+x.username+'\nm: '+x.message)
         messages.prepend('<li>' + x.username + ': ' + x.message + '</li>' );
     });
 
-    socket.emit('get-page-info', window.location.pathname);
-
     $('form').submit(function (e) {
         e.preventDefault();
+
+        var u = $('#user-name').val();
+        var p = $('#user-message').val();
         
         socket.emit('message-from-user', {
-            'username': $('#user-name').val(),
-            'message': $('#user-message').val(),
+            'username': u,
+            'message': p,
+            'room': room
         });
+
+        // messages.prepend('<li>' + u + ': ' + p + '</li>');
 
         $('#user-message').val('').focus();
 
