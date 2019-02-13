@@ -9,4 +9,4 @@ Rooms with greater than 2 users are listed as 'active'. Any running instance sho
 - [Socket.IO Namespaces and Rooms](https://socket.io/docs/#Restricting-yourself-to-a-namespace)
 - [Handling 1M websockets connections in Go](https://github.com/eranyanay/1m-go-websockets#going-infinite-handling-1m-websockets-connections-in-go)
 
-Personal instance live at <https://sentiment-io.herokuapp.com/>
+Personal instance live at <https://sentiment-io.herokuapp.com/>, please note that no rooms will be visible unless >1 users join a room simultaneously.
